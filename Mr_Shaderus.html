@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mr.Shaderus: colour picker panel for Photoshop</title>
+<meta name="description" content="Choose colour on a lit form, not on a flat swatch. A Photoshop panel with sun, HDRI moods, materials and your own 3D heads.">
+<style>
+:root{--bg:#1c1c1c;--card:#2b2b2b;--c2:#343434;--fld:#3f3f3f;--ln:#ececec;--tx:#ececec;--mu:#9a9a9a;--glow:#ffb36b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(60% 50% at 78% 18%,color-mix(in srgb,var(--glow) 26%,transparent),transparent 70%),radial-gradient(40% 40% at 8% 90%,rgba(120,140,255,.10),transparent 70%);transition:background .6s}
+a{color:inherit}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
+.brand{font-weight:700;letter-spacing:.02em;text-decoration:none}
+.brand i{display:inline-block;width:12px;height:12px;margin-right:8px;background:var(--glow);transition:background .6s}
+nav div a{margin-left:22px;color:var(--mu);text-decoration:none;font-size:14px}
+nav div a:hover{color:var(--tx)}
+.btn{display:inline-block;padding:12px 22px;background:var(--tx);color:#111;font-weight:700;text-decoration:none;border:1px solid var(--tx);cursor:pointer;font-size:15px}
+.btn:hover{background:#fff}
+.btn.ghost{background:transparent;color:var(--tx);border-color:#5a5a5a}
+.btn.ghost:hover{border-color:var(--tx)}
+.hero{display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:center;padding:34px 0 70px}
+.eyebrow{color:var(--glow);font-size:13px;letter-spacing:.14em;text-transform:uppercase;transition:color .6s}
+h1{font-size:clamp(34px,5.2vw,58px);line-height:1.05;margin:14px 0 18px;letter-spacing:-.02em}
+h1 em{font-style:normal;color:var(--glow);transition:color .6s}
+.lead{color:#c4c4c4;font-size:18px;max-width:34em;margin:0 0 26px}
+.cta{display:flex;flex-wrap:wrap;gap:12px}
+.fine{color:var(--mu);font-size:13px;margin-top:16px}
+.demo{background:var(--card);border:1px solid #3a3a3a;padding:14px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.demo .bar{display:flex;justify-content:space-between;color:var(--mu);font-size:12px;margin-bottom:10px}
+.demo{position:relative}.lock{position:absolute;inset:0;z-index:5;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;padding:24px;background:rgba(20,20,20,.9)}.lock.on{display:flex}.lock h3{margin:0;font-size:22px}.lock p{margin:0;color:#c4c4c4;max-width:26em}
+.stage{position:relative;background:var(--c2)}
+#d{display:block;width:100%;aspect-ratio:1;cursor:grab;touch-action:none}
+#d:active{cursor:grabbing}
+.chip{position:absolute;left:10px;top:10px;font-size:11px;color:#cfcfcf;background:rgba(20,20,20,.7);padding:6px;display:flex;gap:8px;align-items:center}
+.chip b{display:block;width:26px;height:26px;background:#c88}
+.hs{display:block;width:100%;height:72px;margin-top:10px;cursor:crosshair;touch-action:none}
+input[type=range]{width:100%;margin:10px 0 4px;accent-color:#ececec}
+.row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tab{flex:1;min-width:64px;padding:8px 6px;background:var(--c2);color:var(--mu);border:1px solid var(--c2);font:13px inherit;cursor:pointer}
+.tab.on{background:var(--fld);color:#fff;border-color:var(--ln)}
+.sw{width:32px;height:32px;border:2px solid var(--c2);padding:0;cursor:pointer}
+.sw.on{border-color:var(--ln)}
+.cap{color:var(--mu);font-size:11px;margin-top:10px;letter-spacing:.06em;text-transform:uppercase}
+section{padding:60px 0}
+h2{font-size:clamp(26px,3.6vw,38px);margin:0 0 10px;letter-spacing:-.01em}
+.sub{color:var(--mu);margin:0 0 34px;max-width:40em}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.f{background:var(--card);border:1px solid #363636;padding:22px}
+.f h3{margin:0 0 8px;font-size:17px}
+.f p{margin:0;color:#b9b9b9;font-size:15px}
+.f s{display:block;width:26px;height:4px;background:var(--glow);margin-bottom:14px;text-decoration:none;transition:background .6s}
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.plan{background:var(--card);border:1px solid #363636;padding:26px}
+.plan.pro{border-color:var(--ln)}
+.plan h3{margin:0;font-size:20px}
+.price{font-size:30px;font-weight:700;margin:6px 0 14px}
+.plan ul{margin:0 0 20px;padding-left:18px;color:#c4c4c4}
+.plan li{margin:6px 0}
+.join{text-align:center;background:var(--card);border:1px solid #3a3a3a;padding:54px 20px}
+footer{color:var(--mu);font-size:13px;padding:30px 0 50px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.rv{opacity:0;transform:translateY(18px);transition:opacity .7s,transform .7s}
+.rv.in{opacity:1;transform:none}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--tx);color:#111;padding:10px 16px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .3s}
+#toast.on{opacity:1}
+@media(max-width:860px){.hero{grid-template-columns:1fr;padding-top:10px}.grid{grid-template-columns:1fr 1fr}.plans{grid-template-columns:1fr}nav div a{display:none}}
+@media(max-width:520px){.grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav><a class="brand" href="#"><i></i>Mr.Shaderus</a><div><a href="#features">Features</a><a href="#plans">Lite &amp; Pro</a><a class="btn buy-l" href="#plans">Buy on Gumroad</a></div></nav>
+
+<header class="hero">
+  <div>
+    <div class="eyebrow">Photoshop panel · for painters &amp; 3D artists</div>
+    <h1>Choose colour where it lives: <em>in the light.</em></h1>
+    <p class="lead">A flat swatch lies about colour. Mr.Shaderus lets you pick it on a lit sphere or head, with a sun, moody HDRI lighting and real materials, then sends it straight to Photoshop.</p>
+    <div class="cta"><a class="btn buy-l" href="#plans">Get Mr.Shaderus</a><a class="btn ghost" href="#demo">Try the live demo ↓</a></div>
+    <p class="fine">Lite and Pro versions · Instant download via Gumroad · Windows &amp; macOS, Photoshop with UXP panels</p>
+  </div>
+
+  <div class="demo rv" id="demo">
+    <div class="lock" id="lock"><h3>Demo time is over</h3><p>Liked how colour reads in the light? Get the full panel for Photoshop.</p><a class="btn" href="#plans">Get Lite or Pro</a></div>
+    <div class="bar"><span id="dl">LIVE DEMO · drag the sun</span><span id="rd">Gloss · Studio</span></div>
+    <div class="stage"><canvas id="d" aria-label="Lit sphere. Drag to move the sun."></canvas><div class="chip"><b id="flat"></b>Standard<br>picker</div></div>
+    <canvas class="hs" id="hs" width="360" height="72" aria-label="Hue and saturation"></canvas>
+    <input type="range" id="v" min="8" max="100" value="92" aria-label="Value">
+    <div class="cap">Material</div><div class="row" id="mats"></div>
+    <div class="cap">Fantasy look (sun + HDRI)</div><div class="row" id="moods"></div>
+  </div>
+</header>
+
+<section id="features">
+  <h2 class="rv">Everything a colour decision needs</h2>
+  <p class="sub rv">One compact panel replaces guessing. Light, material and environment change how a colour reads, so you see all three while you pick.</p>
+  <div class="grid">
+    <div class="f rv"><s></s><h3>Colour on a lit form</h3><p>Pick on a sphere or a head. Shadow, highlight and bounce light show whether the colour really works.</p></div>
+    <div class="f rv"><s></s><h3>Sun &amp; HDRI moods</h3><p>Move the sun, change its time of day, tint the HDRI, or jump to a Fantasy look in one click: Golden realm, Dragon fire, Night city and more.</p></div>
+    <div class="f rv"><s></s><h3>Ready-made materials</h3><p>Start from a material, then shape it with Metallic, Roughness, Specular, Subsurface, Glass and Emission.</p></div>
+    <div class="f rv"><s></s><h3>Your own objects &amp; HDRI</h3><p>Drop OBJ heads and props into the objects folder and load your own .hdr environments.</p></div>
+    <div class="f rv"><s></s><h3>Stylizer</h3><p>Preview colour bands, pixel size, outline and flat colour to check how a colour survives simplification.</p></div>
+    <div class="f rv"><s></s><h3>Made for Photoshop</h3><p>A dockable panel that works with your foreground colour. It renders on the CPU, so no GPU is needed.</p></div>
+  </div>
+</section>
+
+<section id="plans">
+  <h2 class="rv">Two versions. Pick yours.</h2>
+  <p class="sub rv">Start light, upgrade any time. One-time purchase, no subscription. Instant download and licence key by email via Gumroad.</p>
+  <div class="plans">
+    <div class="plan rv"><h3>Lite</h3><div class="price" id="pl">$12</div><ul><li>Lit sphere and head preview</li><li>Sun and Fantasy looks</li><li>Core materials</li><li>Foreground colour sync</li></ul><a class="btn ghost" id="bl" href="#" target="_blank" rel="noopener">Get Lite</a></div>
+    <div class="plan pro rv"><h3>Pro</h3><div class="price" id="pp">$29</div><ul><li>Everything in Lite</li><li>Your own OBJ objects and .hdr files</li><li>Stylizer</li><li>All materials, saved presets, free updates</li></ul><a class="btn" id="bp" href="#" target="_blank" rel="noopener">Get Pro</a></div>
+  </div>
+  <p class="fine">Payments and VAT are handled by Gumroad. Licence: one person, personal and commercial work, no redistribution.</p>
+</section>
+
+<section><div class="join rv"><h2>Paint in the light</h2><p class="sub" style="margin:0 auto 22px">Try the live demo above, then choose Lite or Pro.</p><a class="btn buy-l" href="#plans">See Lite &amp; Pro</a></div></section>
+<footer><span>Mr.Shaderus · made by an artist, for artists</span><span>© 2026</span></footer>
+</div>
+<div id="toast">Product link is not set yet.</div>
+
+<script>
+(()=>{
+/* ===== SALES SETTINGS: edit here ===== */
+const DEMO_SECONDS=60;/* demo time per visitor; resets after 24 h */
+const STORE="https://mykolavodopyan.gumroad.com/";
+const LITE_URL=STORE;/* e.g. STORE+"l/shaderus-lite" */
+const PRO_URL=STORE;/* e.g. STORE+"l/shaderus-pro" */
+const LITE_PRICE="$12",PRO_PRICE="$29";/* one-time, USD */
+const $=s=>document.querySelector(s),cv=$("#d"),cx=cv.getContext("2d"),N=280,R=N*.4,hs=$("#hs"),hx=hs.getContext("2d");
+cv.width=cv.height=N;
+const S={h:22,s:.62,v:.92,lx:-.55,ly:.6,m:2,k:0,auto:true};
+const MATS=[["Matte",.95,0,0],["Satin",.5,.35,0],["Gloss",.2,.9,0],["Metal",.3,1,1]];
+const MOODS=[["Studio","#5ef0c4",[1,.97,.92],[.2,.22,.25],"#ffd9a8"],["Golden realm","#ffd36b",[1,.8,.42],[.3,.21,.1],"#ffb347"],["Enchanted forest","#a3e65c",[.85,1,.62],[.09,.22,.11],"#8fe36a"],["Fairy dawn","#ffb7d1",[1,.76,.88],[.3,.2,.27],"#ff9ec4"],["Dragon fire","#ff6a2d",[1,.42,.18],[.26,.07,.03],"#ff6a2d"],["Moonlight","#8fa3ff",[.7,.78,1],[.07,.1,.21],"#8fa3ff"],["Night city","#5f84ff",[.42,.58,1],[.04,.06,.16],"#5f84ff"]];
+const hsv=(h,s,v)=>{const f=n=>{const k=(n+h/60)%6;return v-v*s*Math.max(0,Math.min(k,4-k,1))};return[f(5),f(3),f(1)]};
+const g=Math.pow;
+function draw(){
+ const img=cx.createImageData(N,N),d=img.data,M=MATS[S.m],mo=MOODS[S.k],c0=hsv(S.h,S.s,S.v),al=c0.map(c=>g(c,2.2)),sun=mo[2],am=mo[3];
+ const lz=Math.sqrt(Math.max(.08,1.3-S.lx*S.lx-S.ly*S.ly)),ll=Math.hypot(S.lx,S.ly,lz),Lx=S.lx/ll,Ly=S.ly/ll,Lz=lz/ll;
+ const hl=Math.hypot(Lx,Ly,Lz+1),Hx=Lx/hl,Hy=Ly/hl,Hz=(Lz+1)/hl,shin=6+(1-M[1])*150,met=M[3];
+ for(let y=0;y<N;y++)for(let x=0;x<N;x++){
+  let px=(x+.5-N/2)/R,py=-(y+.5-N/2)/R,r2=px*px+py*py,i=(y*N+x)*4;
+  const vg=1-1.3*((x/N-.5)**2+(y/N-.5)**2),bk=(.7+.9*(py*.28+.5))*vg;
+  const e=Math.min(1,Math.max(0,(1-Math.sqrt(r2))*R+.5));
+  let nx=px,ny=py,nz=0,dif=0,sp=0,rim=0;
+  if(e>0){const q=Math.min(r2,.9992);nz=Math.sqrt(1-q);if(r2>.9992){const k=Math.sqrt(.9992/r2);nx*=k;ny*=k}
+   dif=Math.max(0,(nx*Lx+ny*Ly+nz*Lz+.12)/1.12);sp=g(Math.max(0,nx*Hx+ny*Hy+nz*Hz),shin)*M[2];rim=g(1-nz,3)}
+  for(let k=0;k<3;k++){
+   let c=am[k]*bk*1.5;
+   if(e>0){const dk=1-met*.92,sc=met?al[k]:1;
+    const s=al[k]*dk*(sun[k]*dif+am[k]*1.2)+sc*sun[k]*sp*(met?1.5:1)+am[k]*rim*(met?2.4:.7)+met*al[k]*am[k]*1.6*(.5+nz*.5);
+    c=c*(1-e)+s*e}
+   d[i+k]=255*g(Math.min(1,c/(1+c*.12)),1/2.2)}
+  d[i+3]=255}
+ cx.putImageData(img,0,0);
+ const sx=N/2+S.lx*R,sy=N/2-S.ly*R;
+ cx.beginPath();cx.arc(sx,sy,8,0,6.2832);cx.fillStyle="rgb("+sun.map(v=>v*255|0)+")";cx.fill();cx.lineWidth=2;cx.strokeStyle="rgba(255,255,255,.95)";cx.stroke();
+ for(let a=0;a<8;a++){const t=a*.7854;cx.beginPath();cx.moveTo(sx+Math.cos(t)*12,sy+Math.sin(t)*12);cx.lineTo(sx+Math.cos(t)*16,sy+Math.sin(t)*16);cx.stroke()}
+ $("#flat").style.background="rgb("+c0.map(v=>v*255|0)+")";
+ $("#rd").textContent=M[0]+" · "+mo[0];
+ const r=document.documentElement.style;r.setProperty("--glow",mo[4]);
+}
+let hsBase;
+function initHS(){const w=hs.width,h=hs.height;hsBase=hx.createImageData(w,h);for(let y=0;y<h;y++)for(let x=0;x<w;x++){const c=hsv(x/w*360,1-y/h,1),i=(y*w+x)*4;hsBase.data[i]=c[0]*255;hsBase.data[i+1]=c[1]*255;hsBase.data[i+2]=c[2]*255;hsBase.data[i+3]=255}}
+function drawHS(){hx.putImageData(hsBase,0,0);const mx=S.h/360*hs.width,my=(1-S.s)*hs.height;hx.lineWidth=2;hx.strokeStyle="#fff";hx.strokeRect(mx-6,my-6,12,12);hx.lineWidth=1;hx.strokeStyle="#111";hx.strokeRect(mx-7.5,my-7.5,15,15)}
+const drag=(el,fn)=>{el.addEventListener("pointerdown",e=>{S.auto=false;el.setPointerCapture(e.pointerId);fn(e);const mv=ev=>fn(ev),up=()=>{el.removeEventListener("pointermove",mv);el.removeEventListener("pointerup",up)};el.addEventListener("pointermove",mv);el.addEventListener("pointerup",up)})};
+drag(cv,e=>{const r=cv.getBoundingClientRect();let x=((e.clientX-r.left)/r.width*N-N/2)/R,y=-((e.clientY-r.top)/r.height*N-N/2)/R;const l=Math.hypot(x,y);if(l>1.12){x*=1.12/l;y*=1.12/l}S.lx=x;S.ly=y;draw()});
+drag(hs,e=>{const r=hs.getBoundingClientRect();S.h=Math.min(359.9,Math.max(0,(e.clientX-r.left)/r.width*360));S.s=1-Math.min(1,Math.max(0,(e.clientY-r.top)/r.height));drawHS();draw()});
+$("#v").addEventListener("input",e=>{S.auto=false;S.v=e.target.value/100;draw()});
+const mk=(box,list,fn,sw)=>{list.forEach((m,i)=>{const b=document.createElement("button");b.type="button";if(sw){b.className="sw";b.style.background=m[1];b.title=m[0];b.setAttribute("aria-label",m[0])}else{b.className="tab";b.textContent=m[0]}b.onclick=()=>{S.auto=false;fn(i);[...box.children].forEach((c,j)=>c.classList.toggle("on",j===i));draw()};box.appendChild(b)});box.children[box===$("#mats")?S.m:S.k].classList.add("on")};
+mk($("#mats"),MATS,i=>S.m=i,false);mk($("#moods"),MOODS,i=>S.k=i,true);
+initHS();drawHS();draw();
+const rm=matchMedia("(prefers-reduced-motion:reduce)").matches;let vis=true,t=0,last=0;
+new IntersectionObserver(a=>vis=a[0].isIntersecting).observe(cv);
+if(!rm)requestAnimationFrame(function f(ts){requestAnimationFrame(f);if(!S.auto||!vis||ts-last<40)return;last=ts;t+=.025;S.lx=.85*Math.cos(t);S.ly=.5+.4*Math.sin(t*.8);draw()});
+const io=new IntersectionObserver(a=>a.forEach(x=>{if(x.isIntersecting){x.target.classList.add("in");io.unobserve(x.target)}}),{threshold:.12});
+document.querySelectorAll(".rv").forEach(el=>io.observe(el));
+$("#bl").href=LITE_URL;$("#bp").href=PRO_URL;$("#pl").textContent=LITE_PRICE+" · one-time";$("#pp").textContent=PRO_PRICE+" · one-time";
+document.querySelectorAll(".buy-l").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();$("#plans").scrollIntoView({behavior:"smooth"})}));
+
+/* demo time limit: counts from first touch, remembered in localStorage */
+let used=0,t0=Date.now(),locked=false,timer=0;
+try{const o=JSON.parse(localStorage.getItem("shd")||"null");if(o&&Date.now()-o.t<864e5){used=o.u;t0=o.t}}catch(e){}
+const mmss=n=>Math.floor(n/60)+":"+String(n%60).padStart(2,"0");
+function lockDemo(){locked=true;clearInterval(timer);S.auto=false;$("#lock").classList.add("on");$("#dl").textContent="DEMO ENDED"}
+function startDemo(){if(timer||locked)return;timer=setInterval(()=>{used++;try{localStorage.setItem("shd",JSON.stringify({t:t0,u:used}))}catch(e){}
+ if(used>=DEMO_SECONDS)lockDemo();else $("#dl").textContent="LIVE DEMO · "+mmss(DEMO_SECONDS-used)+" left"},1000)}
+if(used>=DEMO_SECONDS)lockDemo();
+$("#demo").addEventListener("pointerdown",startDemo);
+})();
+</script>
+</body>
+</html>
